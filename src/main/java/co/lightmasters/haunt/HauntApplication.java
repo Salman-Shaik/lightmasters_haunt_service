@@ -11,6 +11,7 @@ public class HauntApplication {
     public static void main(String[] args) {
         SpringApplication.run(HauntApplication.class, args);
     }
+
     @Bean
     public RestTemplate getRestTemplate() {
         return new RestTemplate();

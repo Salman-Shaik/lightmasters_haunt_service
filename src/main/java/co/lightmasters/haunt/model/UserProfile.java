@@ -1,37 +1,40 @@
 package co.lightmasters.haunt.model;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
-import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 
 
-@Getter
 @Builder
+@Entity
+@Data
+@Slf4j
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
-@Setter
-@ToString
-@Embeddable
+@Table(name = "profile", schema = "public")
 public class UserProfile {
+    @Id
+    @NotBlank
+    private String username;
+
     private boolean student;
     private String university;
     private String profession;
     private String organization;
-    public String height;
     public String education;
+    public String height;
+    public String sexuality;
     public String starSign;
     public String religion;
     public boolean drinking;
@@ -39,5 +42,10 @@ public class UserProfile {
 
     @Embedded
     @JsonUnwrapped
-    private Preferences preferences;
+    private UserPreferences userPreferences;
+
+    public String toJson() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(this);
+    }
 }
