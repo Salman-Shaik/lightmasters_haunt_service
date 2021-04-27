@@ -4,27 +4,26 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.Setter;
+import lombok.ToString;
 
-import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Table;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 
+@Getter
 @Builder
-@Entity
-@Data
-@Slf4j
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user", schema = "public")
-public class User {
-    @Id
+@EqualsAndHashCode
+@Setter
+@ToString
+public class UserDto {
     @NotBlank
     private String username;
 
@@ -42,15 +41,8 @@ public class User {
 
     private String aboutMe;
 
-    public static User from(UserDto userDto,String password) {
-        return User.builder()
-                .aboutMe(userDto.getAboutMe())
-                .gender(userDto.getGender())
-                .age(userDto.getAge())
-                .lastName(userDto.getLastName())
-                .firstName(userDto.getFirstName())
-                .username(userDto.getUsername())
-                .password(password)
-                .build();
+    public String toJson() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(this);
     }
 }

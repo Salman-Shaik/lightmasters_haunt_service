@@ -1,7 +1,9 @@
 package co.lightmasters.haunt.controller;
 
 import co.lightmasters.haunt.model.User;
+import co.lightmasters.haunt.model.UserDto;
 import co.lightmasters.haunt.model.UserProfile;
+import co.lightmasters.haunt.model.UserResponse;
 import co.lightmasters.haunt.service.UserProfileService;
 import co.lightmasters.haunt.service.UserService;
 import lombok.AllArgsConstructor;
@@ -25,16 +27,17 @@ public class HauntUserController {
     private final UserProfileService userProfileService;
 
     @GetMapping(path = "/user")
-    public ResponseEntity<User> fetchUser(@RequestParam @Valid String username) {
+    public ResponseEntity<UserResponse> fetchUser(@RequestParam @Valid String username) {
         Optional<User> user = userService.fetchUser(username);
-        return user.map(value -> ResponseEntity.status(HttpStatus.OK).body(value))
+        return user.map(value -> ResponseEntity.status(HttpStatus.OK).body(UserResponse.from(value)))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null));
     }
 
     @PostMapping(path = "/user")
-    public ResponseEntity<User> createUser(@RequestBody @Valid User user) {
-        User saveUser = userService.saveUser(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saveUser);
+    public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserDto userDto) {
+        User saveUser = userService.saveUser(userDto);
+        UserResponse userResponse = UserResponse.from(saveUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body(userResponse);
     }
 
     @GetMapping(path = "/profile")

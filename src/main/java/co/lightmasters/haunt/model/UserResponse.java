@@ -1,11 +1,16 @@
 package co.lightmasters.haunt.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.Entity;
@@ -16,20 +21,16 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 
+@Getter
 @Builder
-@Entity
-@Data
-@Slf4j
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user", schema = "public")
-public class User {
-    @Id
+@EqualsAndHashCode
+@Setter
+@ToString
+public class UserResponse {
     @NotBlank
     private String username;
-
-    @NotBlank
-    private String password;
 
     @NotBlank
     private String firstName;
@@ -42,15 +43,14 @@ public class User {
 
     private String aboutMe;
 
-    public static User from(UserDto userDto,String password) {
-        return User.builder()
-                .aboutMe(userDto.getAboutMe())
-                .gender(userDto.getGender())
-                .age(userDto.getAge())
-                .lastName(userDto.getLastName())
-                .firstName(userDto.getFirstName())
-                .username(userDto.getUsername())
-                .password(password)
+    public static UserResponse from(User user) {
+        return UserResponse.builder()
+                .aboutMe(user.getAboutMe())
+                .gender(user.getGender())
+                .age(user.getAge())
+                .lastName(user.getLastName())
+                .firstName(user.getFirstName())
+                .username(user.getUsername())
                 .build();
     }
 }

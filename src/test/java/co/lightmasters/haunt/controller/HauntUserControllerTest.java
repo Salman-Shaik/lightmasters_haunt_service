@@ -1,8 +1,10 @@
 package co.lightmasters.haunt.controller;
 
 import co.lightmasters.haunt.model.User;
+import co.lightmasters.haunt.model.UserDto;
 import co.lightmasters.haunt.model.UserPreferences;
 import co.lightmasters.haunt.model.UserProfile;
+import co.lightmasters.haunt.model.UserResponse;
 import co.lightmasters.haunt.security.WebSecurityConfig;
 import co.lightmasters.haunt.service.UserProfileService;
 import co.lightmasters.haunt.service.UserService;
@@ -40,11 +42,13 @@ public class HauntUserControllerTest {
     private MockMvc mockMvc;
 
     private User user;
+    private UserDto userDto;
+    private UserResponse userResponse;
     private UserProfile userProfile;
 
     @BeforeEach
     public void setUp() {
-        user = User.builder()
+        userDto = UserDto.builder()
                 .username("test")
                 .password("password")
                 .firstName("first")
@@ -53,6 +57,8 @@ public class HauntUserControllerTest {
                 .gender("Male")
                 .aboutMe("Duh")
                 .build();
+        user = User.from(userDto,"hashed");
+        userResponse = UserResponse.from(user);
         UserPreferences userPreferences = UserPreferences.builder().activePeopleStatus("").genderChoice("Both").politicalOpinion("").build();
         userProfile = UserProfile.builder()
                 .username("test")
@@ -72,22 +78,24 @@ public class HauntUserControllerTest {
 
     @Test
     public void shouldCreateUser() throws Exception {
-        when(userService.saveUser(user)).thenReturn(user);
+        when(userService.saveUser(userDto)).thenReturn(user);
         this.mockMvc.perform(post("/v1/user").contentType(MediaType.APPLICATION_JSON)
-                .content(user.toJson()))
+                .content(userDto.toJson()))
                 .andExpect(status().isCreated());
     }
 
     @Test
     public void shouldFetchUserDetailsWhenAvailable() throws Exception {
+        when(userService.saveUser(userDto)).thenReturn(user);
         when(userService.fetchUser(user.getUsername())).thenReturn(Optional.ofNullable(user));
+
         this.mockMvc.perform(post("/v1/user").contentType(MediaType.APPLICATION_JSON)
-                .content(user.toJson()))
+                .content(userDto.toJson()))
                 .andExpect(status().isCreated());
         this.mockMvc.perform(get("/v1/user").queryParam("username", "test"))
                 .andExpect(status().isOk()).andReturn();
 
-        verify(userService,times(1)).fetchUser(user.getUsername());
+        verify(userService, times(1)).fetchUser(user.getUsername());
     }
 
     @Test
@@ -96,7 +104,7 @@ public class HauntUserControllerTest {
         this.mockMvc.perform(get("/v1/user").queryParam("username", "test"))
                 .andExpect(status().isUnauthorized()).andReturn();
 
-        verify(userService,times(1)).fetchUser(user.getUsername());
+        verify(userService, times(1)).fetchUser(user.getUsername());
     }
 
     @Test
@@ -116,7 +124,7 @@ public class HauntUserControllerTest {
         this.mockMvc.perform(get("/v1/profile").queryParam("username", "test"))
                 .andExpect(status().isOk()).andReturn();
 
-        verify(userProfileService,times(1)).fetchProfile(user.getUsername());
+        verify(userProfileService, times(1)).fetchProfile(user.getUsername());
     }
 
     @Test
@@ -125,6 +133,6 @@ public class HauntUserControllerTest {
         this.mockMvc.perform(get("/v1/profile").queryParam("username", "test"))
                 .andExpect(status().isUnauthorized()).andReturn();
 
-        verify(userProfileService,times(1)).fetchProfile(user.getUsername());
+        verify(userProfileService, times(1)).fetchProfile(user.getUsername());
     }
 }
