@@ -1,5 +1,6 @@
 package co.lightmasters.haunt.controller;
 
+import co.lightmasters.haunt.model.Credentials;
 import co.lightmasters.haunt.model.User;
 import co.lightmasters.haunt.model.UserDto;
 import co.lightmasters.haunt.model.UserPreferences;
@@ -43,36 +44,18 @@ public class HauntUserControllerTest {
 
     private User user;
     private UserDto userDto;
-    private UserResponse userResponse;
     private UserProfile userProfile;
+    private Credentials credentials;
 
     @BeforeEach
     public void setUp() {
-        userDto = UserDto.builder()
-                .username("test")
-                .password("password")
-                .firstName("first")
-                .lastName("last")
-                .age(21)
-                .gender("Male")
-                .aboutMe("Duh")
-                .build();
-        user = User.from(userDto,"hashed");
-        userResponse = UserResponse.from(user);
-        UserPreferences userPreferences = UserPreferences.builder().activePeopleStatus("").genderChoice("Both").politicalOpinion("").build();
-        userProfile = UserProfile.builder()
-                .username("test")
-                .drinking(false)
-                .smoking(false)
-                .education("Schooling")
-                .height("5")
-                .organization("")
-                .profession("")
-                .religion("")
-                .sexuality("Straight")
-                .starSign("Zodiac")
-                .student(false)
-                .userPreferences(userPreferences)
+        userDto = buildUserDto();
+        user = User.from(userDto, "hashed");
+
+        userProfile = buildUserProfile();
+        credentials= Credentials.builder()
+                .username(user.getUsername())
+                .password(user.getPassword())
                 .build();
     }
 
@@ -134,5 +117,50 @@ public class HauntUserControllerTest {
                 .andExpect(status().isUnauthorized()).andReturn();
 
         verify(userProfileService, times(1)).fetchProfile(user.getUsername());
+    }
+
+    @Test
+    public void shouldLoginWhenValidCredentialsAreProvided() throws Exception {
+        when(userService.saveUser(userDto)).thenReturn(user);
+        when(userService.fetchUser(user.getUsername())).thenReturn(Optional.ofNullable(user));
+
+        this.mockMvc.perform(post("/v1/user").contentType(MediaType.APPLICATION_JSON)
+                .content(userDto.toJson()))
+                .andExpect(status().isCreated());
+        this.mockMvc.perform(post("/v1/login").contentType(MediaType.APPLICATION_JSON)
+                .content(credentials.toJson()))
+                .andExpect(status().isOk());
+
+        verify(userService, times(1)).loginUser(credentials);
+    }
+
+    private UserProfile buildUserProfile() {
+        UserPreferences userPreferences = UserPreferences.builder().activePeopleStatus("").genderChoice("Both").politicalOpinion("").build();
+        return UserProfile.builder()
+                .username("test")
+                .drinking(false)
+                .smoking(false)
+                .education("Schooling")
+                .height("5")
+                .organization("")
+                .profession("")
+                .religion("")
+                .sexuality("Straight")
+                .starSign("Zodiac")
+                .student(false)
+                .userPreferences(userPreferences)
+                .build();
+    }
+
+    private UserDto buildUserDto() {
+        return UserDto.builder()
+                .username("test")
+                .password("password")
+                .firstName("first")
+                .lastName("last")
+                .age(21)
+                .gender("Male")
+                .aboutMe("Duh")
+                .build();
     }
 }

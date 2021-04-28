@@ -1,5 +1,6 @@
 package co.lightmasters.haunt.controller;
 
+import co.lightmasters.haunt.model.Credentials;
 import co.lightmasters.haunt.model.User;
 import co.lightmasters.haunt.model.UserDto;
 import co.lightmasters.haunt.model.UserProfile;
@@ -53,4 +54,8 @@ public class HauntUserController {
         return ResponseEntity.status(HttpStatus.OK).body(saveProfile);
     }
 
+    @PostMapping(path = "/login")
+    public ResponseEntity<Object> loginUser(@RequestBody @Valid Credentials credentials) {
+        return userService.loginUser(credentials);
+    }
 }
