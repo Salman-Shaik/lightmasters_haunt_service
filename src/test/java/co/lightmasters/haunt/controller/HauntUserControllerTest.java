@@ -1,14 +1,19 @@
 package co.lightmasters.haunt.controller;
 
 import co.lightmasters.haunt.model.Credentials;
+import co.lightmasters.haunt.model.Post;
+import co.lightmasters.haunt.model.PostDto;
 import co.lightmasters.haunt.model.User;
 import co.lightmasters.haunt.model.UserDto;
+import co.lightmasters.haunt.model.UserFeed;
 import co.lightmasters.haunt.model.UserPreferences;
 import co.lightmasters.haunt.model.UserProfile;
 import co.lightmasters.haunt.model.UserResponse;
 import co.lightmasters.haunt.security.WebSecurityConfig;
+import co.lightmasters.haunt.service.UserFeedService;
 import co.lightmasters.haunt.service.UserProfileService;
 import co.lightmasters.haunt.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -19,9 +24,15 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -39,6 +50,9 @@ public class HauntUserControllerTest {
     @MockBean
     private UserProfileService userProfileService;
 
+    @MockBean
+    private UserFeedService userFeedService;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -46,6 +60,9 @@ public class HauntUserControllerTest {
     private UserDto userDto;
     private UserProfile userProfile;
     private Credentials credentials;
+    private PostDto postDto;
+    private Post post;
+    private UserFeed feed;
 
     @BeforeEach
     public void setUp() {
@@ -53,9 +70,15 @@ public class HauntUserControllerTest {
         user = User.from(userDto, "hashed");
 
         userProfile = buildUserProfile();
-        credentials= Credentials.builder()
+        credentials = Credentials.builder()
                 .username(user.getUsername())
                 .password(user.getPassword())
+                .build();
+        postDto = PostDto.builder().tweet("tweet").username("test").build();
+        post = Post.from(postDto);
+        feed = UserFeed.builder()
+                .posts(Collections.emptyList())
+                .username("test")
                 .build();
     }
 
@@ -132,6 +155,41 @@ public class HauntUserControllerTest {
                 .andExpect(status().isOk());
 
         verify(userService, times(1)).loginUser(credentials);
+    }
+
+    @Test
+    public void shouldSavePostInUsersFeedWhenAvailable() throws Exception {
+        when(userFeedService.fetchUserFeed(postDto.getUsername())).thenReturn(Optional.ofNullable(feed));
+        this.mockMvc.perform(post("/v1/post").contentType(MediaType.APPLICATION_JSON)
+                .content(postDto.toJson()))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    public void shouldSavePostInUsersFeedWhenIsNotAvailable() throws Exception {
+        when(userFeedService.fetchUserFeed(postDto.getUsername())).thenReturn(Optional.empty());
+        this.mockMvc.perform(post("/v1/post").contentType(MediaType.APPLICATION_JSON)
+                .content(postDto.toJson()))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    public void shouldFetchLatestPostFromUsersFeed() throws Exception {
+        feed.setPosts(Arrays.asList(new Post("firstTweet", new Date()), new Post("secondTweet", new Date())));
+        when(userFeedService.getLatestPost(postDto.getUsername())).thenReturn(feed.getPosts().get(0));
+        MvcResult mvcResult = this.mockMvc.perform(get("/v1/post").queryParam("username", "test"))
+                .andExpect(status().isOk()).andReturn();
+
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        ObjectMapper objectMapper = new ObjectMapper();
+        Post post = objectMapper.readValue(contentAsString, Post.class);
+        assertEquals(post.getTweet(), "firstTweet");
+    }
+
+    @Test
+    public void shouldFetchUsersFeed() throws Exception {
+        when(userFeedService.fetchUserFeed(postDto.getUsername())).thenReturn(Optional.ofNullable(feed));
+        this.mockMvc.perform(get("/v1/feed").queryParam("username", "test")).andExpect(status().isOk());
     }
 
     private UserProfile buildUserProfile() {

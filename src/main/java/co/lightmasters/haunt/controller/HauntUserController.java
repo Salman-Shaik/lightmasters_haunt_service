@@ -1,10 +1,14 @@
 package co.lightmasters.haunt.controller;
 
 import co.lightmasters.haunt.model.Credentials;
+import co.lightmasters.haunt.model.Post;
+import co.lightmasters.haunt.model.PostDto;
 import co.lightmasters.haunt.model.User;
 import co.lightmasters.haunt.model.UserDto;
+import co.lightmasters.haunt.model.UserFeed;
 import co.lightmasters.haunt.model.UserProfile;
 import co.lightmasters.haunt.model.UserResponse;
+import co.lightmasters.haunt.service.UserFeedService;
 import co.lightmasters.haunt.service.UserProfileService;
 import co.lightmasters.haunt.service.UserService;
 import lombok.AllArgsConstructor;
@@ -26,6 +30,7 @@ import java.util.Optional;
 public class HauntUserController {
     private final UserService userService;
     private final UserProfileService userProfileService;
+    private final UserFeedService userFeedService;
 
     @GetMapping(path = "/user")
     public ResponseEntity<UserResponse> fetchUser(@RequestParam @Valid String username) {
@@ -57,5 +62,24 @@ public class HauntUserController {
     @PostMapping(path = "/login")
     public ResponseEntity<Object> loginUser(@RequestBody @Valid Credentials credentials) {
         return userService.loginUser(credentials);
+    }
+
+    @PostMapping(path = "/post")
+    public ResponseEntity<Post> savePost(@RequestBody @Valid PostDto post) {
+        Post savePost = userFeedService.savePost(post);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savePost);
+    }
+
+    @GetMapping(path = "/post")
+    public ResponseEntity<Post> getLatestPost(@RequestParam @Valid String username) {
+        Post latestPost = userFeedService.getLatestPost(username);
+        return ResponseEntity.status(HttpStatus.OK).body(latestPost);
+    }
+
+    @GetMapping(path = "/feed")
+    public ResponseEntity<UserFeed> getUserFeed(@RequestParam @Valid String username) {
+        Optional<UserFeed> userFeed = userFeedService.fetchUserFeed(username);
+        return userFeed.map(feed -> ResponseEntity.status(HttpStatus.OK).body(feed))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NO_CONTENT).body(null));
     }
 }

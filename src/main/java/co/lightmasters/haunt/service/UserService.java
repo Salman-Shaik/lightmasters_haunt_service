@@ -2,6 +2,8 @@ package co.lightmasters.haunt.service;
 
 import co.lightmasters.haunt.errors.InvalidCredentials;
 import co.lightmasters.haunt.model.Credentials;
+import co.lightmasters.haunt.model.Post;
+import co.lightmasters.haunt.model.PostDto;
 import co.lightmasters.haunt.model.User;
 import co.lightmasters.haunt.model.UserDto;
 import co.lightmasters.haunt.repository.UserRepository;
@@ -34,12 +36,21 @@ public class UserService {
         Optional<User> optionalUser = fetchUser(credentials.getUsername());
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            if (passwordEncoder.matches(credentials.getPassword(), user.getPassword())) {
+            boolean validPassword = passwordEncoder.matches(credentials.getPassword(), user.getPassword());
+            if (validPassword) {
                 return ResponseEntity.ok("Login Success");
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(InvalidCredentials.builder().field("Password").message("Invalid Password").build());
             }
+            return invalidCredentialsResponse("Password", "Invalid Password");
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(InvalidCredentials.builder().field("Username").message("User Not Found").build());
+        return invalidCredentialsResponse("Username", "User Not Found");
+    }
+
+    private ResponseEntity<Object> invalidCredentialsResponse(String fieldName, String errorMessage) {
+        InvalidCredentials invalidCredentialsMessage = InvalidCredentials.builder()
+                .field(fieldName)
+                .message(errorMessage)
+                .build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(invalidCredentialsMessage);
     }
 }
