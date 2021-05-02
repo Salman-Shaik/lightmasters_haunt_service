@@ -39,6 +39,9 @@ public class UserDto {
     private Integer age;
     private String gender;
 
+    @NotBlank
+    private String city;
+
     private String aboutMe;
 
     public String toJson() throws JsonProcessingException {

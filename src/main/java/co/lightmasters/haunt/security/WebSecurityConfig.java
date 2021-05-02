@@ -21,6 +21,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/v1/post").permitAll()
                 .antMatchers(HttpMethod.GET, "/v1/prompts").permitAll()
                 .antMatchers(HttpMethod.GET, "/v1/feed").permitAll()
+                .antMatchers(HttpMethod.GET, "/v1/dateSuggestions").permitAll()
                 .anyRequest().authenticated();
     }
 }

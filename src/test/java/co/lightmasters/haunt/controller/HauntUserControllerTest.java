@@ -71,12 +71,9 @@ public class HauntUserControllerTest {
         user = User.from(userDto, "hashed");
 
         userProfile = buildUserProfile();
-        credentials = Credentials.builder()
-                .username(user.getUsername())
-                .password(user.getPassword())
-                .build();
-        postDto = PostDto.builder().tweet("tweet").username("test").build();
-        promptDto = PromptDto.builder().question("question").answer("answer").username("test").build();
+        credentials = buildCredentials();
+        postDto = buildPostDto();
+        promptDto = buildPromptDto();
         prompt = Prompt.from(promptDto);
         feed = UserFeed.builder()
                 .posts(Collections.emptyList())
@@ -240,7 +237,30 @@ public class HauntUserControllerTest {
                 .lastName("last")
                 .age(21)
                 .gender("Male")
+                .city("city")
                 .aboutMe("Duh")
+                .build();
+    }
+
+    private Credentials buildCredentials() {
+        return Credentials.builder()
+                .username(user.getUsername())
+                .password(user.getPassword())
+                .build();
+    }
+
+    private PromptDto buildPromptDto() {
+        return PromptDto.builder()
+                .question("question")
+                .answer("answer")
+                .username("test")
+                .build();
+    }
+
+    private PostDto buildPostDto() {
+        return PostDto.builder()
+                .tweet("tweet")
+                .username("test")
                 .build();
     }
 }

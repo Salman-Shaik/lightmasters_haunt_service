@@ -43,6 +43,8 @@ public class User {
     private Integer age;
     private String gender;
 
+    @NotBlank
+    private String city;
     private String aboutMe;
 
     @Convert(converter = PromptConverter.class)
