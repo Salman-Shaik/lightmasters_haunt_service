@@ -2,8 +2,8 @@ package co.lightmasters.haunt.service;
 
 import co.lightmasters.haunt.errors.InvalidCredentials;
 import co.lightmasters.haunt.model.Credentials;
-import co.lightmasters.haunt.model.Post;
-import co.lightmasters.haunt.model.PostDto;
+import co.lightmasters.haunt.model.Prompt;
+import co.lightmasters.haunt.model.PromptDto;
 import co.lightmasters.haunt.model.User;
 import co.lightmasters.haunt.model.UserDto;
 import co.lightmasters.haunt.repository.UserRepository;
@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -52,5 +53,26 @@ public class UserService {
                 .build();
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(invalidCredentialsMessage);
+    }
+
+    public Prompt savePrompt(PromptDto promptDto) {
+        Optional<User> optionalUser = fetchUser(promptDto.getUsername());
+        Prompt prompt = Prompt.from(promptDto);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.addPrompt(prompt);
+            userRepository.save(user);
+            return prompt;
+        }
+        return null;
+    }
+
+    public List<Prompt> getPrompts(String username) {
+        Optional<User> optionalUser = fetchUser(username);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            return user.getPrompts();
+        }
+        return null;
     }
 }

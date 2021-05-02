@@ -1,7 +1,6 @@
 package co.lightmasters.haunt.model;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import co.lightmasters.haunt.model.converters.PostConverter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -10,10 +9,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.persistence.Convert;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -26,6 +27,7 @@ import java.util.List;
 @EqualsAndHashCode
 @Setter
 @ToString
+@Entity
 @Table(name = "feed", schema = "public")
 public class UserFeed {
     @Id
@@ -34,6 +36,7 @@ public class UserFeed {
 
     @NotNull
     @Valid
+    @Convert(converter = PostConverter.class)
     private List<Post> posts;
 
     public void addPost(Post post) {

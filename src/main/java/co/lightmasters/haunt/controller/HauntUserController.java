@@ -3,6 +3,8 @@ package co.lightmasters.haunt.controller;
 import co.lightmasters.haunt.model.Credentials;
 import co.lightmasters.haunt.model.Post;
 import co.lightmasters.haunt.model.PostDto;
+import co.lightmasters.haunt.model.Prompt;
+import co.lightmasters.haunt.model.PromptDto;
 import co.lightmasters.haunt.model.User;
 import co.lightmasters.haunt.model.UserDto;
 import co.lightmasters.haunt.model.UserFeed;
@@ -14,6 +16,7 @@ import co.lightmasters.haunt.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -81,5 +85,23 @@ public class HauntUserController {
         Optional<UserFeed> userFeed = userFeedService.fetchUserFeed(username);
         return userFeed.map(feed -> ResponseEntity.status(HttpStatus.OK).body(feed))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NO_CONTENT).body(null));
+    }
+
+    @PostMapping(path = "/prompt")
+    public ResponseEntity<Prompt> savePrompt(@RequestBody @Valid PromptDto promptDto) {
+        Prompt prompt = userService.savePrompt(promptDto);
+        if (prompt == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(prompt);
+    }
+
+    @GetMapping(path = "/prompts")
+    public ResponseEntity<List<Prompt>> getUserPrompts(@RequestParam @Valid String username) {
+        List<Prompt> prompts = userService.getPrompts(username);
+        if (prompts == null || prompts.size() == 0) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(prompts);
     }
 }

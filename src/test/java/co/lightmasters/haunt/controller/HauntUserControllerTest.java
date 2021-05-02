@@ -3,12 +3,13 @@ package co.lightmasters.haunt.controller;
 import co.lightmasters.haunt.model.Credentials;
 import co.lightmasters.haunt.model.Post;
 import co.lightmasters.haunt.model.PostDto;
+import co.lightmasters.haunt.model.Prompt;
+import co.lightmasters.haunt.model.PromptDto;
 import co.lightmasters.haunt.model.User;
 import co.lightmasters.haunt.model.UserDto;
 import co.lightmasters.haunt.model.UserFeed;
 import co.lightmasters.haunt.model.UserPreferences;
 import co.lightmasters.haunt.model.UserProfile;
-import co.lightmasters.haunt.model.UserResponse;
 import co.lightmasters.haunt.security.WebSecurityConfig;
 import co.lightmasters.haunt.service.UserFeedService;
 import co.lightmasters.haunt.service.UserProfileService;
@@ -26,7 +27,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -61,7 +61,8 @@ public class HauntUserControllerTest {
     private UserProfile userProfile;
     private Credentials credentials;
     private PostDto postDto;
-    private Post post;
+    private PromptDto promptDto;
+    private Prompt prompt;
     private UserFeed feed;
 
     @BeforeEach
@@ -75,7 +76,8 @@ public class HauntUserControllerTest {
                 .password(user.getPassword())
                 .build();
         postDto = PostDto.builder().tweet("tweet").username("test").build();
-        post = Post.from(postDto);
+        promptDto = PromptDto.builder().question("question").answer("answer").username("test").build();
+        prompt = Prompt.from(promptDto);
         feed = UserFeed.builder()
                 .posts(Collections.emptyList())
                 .username("test")
@@ -176,7 +178,7 @@ public class HauntUserControllerTest {
     @Test
     public void shouldFetchLatestPostFromUsersFeed() throws Exception {
         feed.setPosts(Arrays.asList(new Post("firstTweet", new Date()), new Post("secondTweet", new Date())));
-        when(userFeedService.getLatestPost(postDto.getUsername())).thenReturn(feed.getPosts().get(0));
+        when(userFeedService.getLatestPost(promptDto.getUsername())).thenReturn(feed.getPosts().get(0));
         MvcResult mvcResult = this.mockMvc.perform(get("/v1/post").queryParam("username", "test"))
                 .andExpect(status().isOk()).andReturn();
 
@@ -188,8 +190,28 @@ public class HauntUserControllerTest {
 
     @Test
     public void shouldFetchUsersFeed() throws Exception {
-        when(userFeedService.fetchUserFeed(postDto.getUsername())).thenReturn(Optional.ofNullable(feed));
+        when(userFeedService.fetchUserFeed(promptDto.getUsername())).thenReturn(Optional.ofNullable(feed));
         this.mockMvc.perform(get("/v1/feed").queryParam("username", "test")).andExpect(status().isOk());
+    }
+
+    @Test
+    public void shouldSavePromptForUser() throws Exception {
+        when(userService.savePrompt(promptDto)).thenReturn(prompt);
+        this.mockMvc.perform(post("/v1/prompt").contentType(MediaType.APPLICATION_JSON)
+                .content(promptDto.toJson()))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    public void shouldFetchUsersPrompts() throws Exception {
+        when(userService.getPrompts(promptDto.getUsername())).thenReturn(Collections.singletonList(prompt));
+        this.mockMvc.perform(get("/v1/prompts").queryParam("username", "test")).andExpect(status().isOk());
+    }
+
+    @Test
+    public void shouldRespondWithNoContentWhenPromptsAreNotAvailable() throws Exception {
+        when(userService.getPrompts(promptDto.getUsername())).thenReturn(Collections.emptyList());
+        this.mockMvc.perform(get("/v1/prompts").queryParam("username", "test")).andExpect(status().isNoContent());
     }
 
     private UserProfile buildUserProfile() {

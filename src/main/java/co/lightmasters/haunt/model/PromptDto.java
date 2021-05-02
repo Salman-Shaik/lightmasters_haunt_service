@@ -1,5 +1,7 @@
 package co.lightmasters.haunt.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -9,7 +11,6 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 
@@ -20,17 +21,16 @@ import java.util.Date;
 @EqualsAndHashCode
 @Setter
 @ToString
-public class Post {
+public class PromptDto {
     @NotBlank
-    private String tweet;
+    private String username;
+    @NotBlank
+    private String question;
+    @NotBlank
+    private String answer;
 
-    @NotNull
-    private Date timeOfCreation;
-
-    public static Post from(PostDto postDto) {
-        return Post.builder()
-                .tweet(postDto.getTweet())
-                .timeOfCreation(new Date())
-                .build();
+    public String toJson() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(this);
     }
 }

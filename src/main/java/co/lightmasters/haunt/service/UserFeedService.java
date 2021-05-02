@@ -2,6 +2,8 @@ package co.lightmasters.haunt.service;
 
 import co.lightmasters.haunt.model.Post;
 import co.lightmasters.haunt.model.PostDto;
+import co.lightmasters.haunt.model.Prompt;
+import co.lightmasters.haunt.model.PromptDto;
 import co.lightmasters.haunt.model.UserFeed;
 import co.lightmasters.haunt.repository.UserFeedRepository;
 import lombok.AllArgsConstructor;

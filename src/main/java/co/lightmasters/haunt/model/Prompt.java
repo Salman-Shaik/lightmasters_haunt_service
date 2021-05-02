@@ -20,17 +20,11 @@ import java.util.Date;
 @EqualsAndHashCode
 @Setter
 @ToString
-public class Post {
-    @NotBlank
-    private String tweet;
+public class Prompt {
+    private String question;
+    private String answer;
 
-    @NotNull
-    private Date timeOfCreation;
-
-    public static Post from(PostDto postDto) {
-        return Post.builder()
-                .tweet(postDto.getTweet())
-                .timeOfCreation(new Date())
-                .build();
+    public static Prompt from(PromptDto promptDto) {
+        return Prompt.builder().question(promptDto.getQuestion()).answer(promptDto.getAnswer()).build();
     }
 }
