@@ -53,8 +53,9 @@ class DateServiceTest {
     }
 
     @Test
-    void shouldReturnDateSuggestions() {
+    void shouldReturnDateSuggestionsWithBothGenderPreference() {
         when(userRepository.findById("test")).thenReturn(Optional.ofNullable(user));
+        when(userProfileRepository.findById("test")).thenReturn(Optional.ofNullable(userProfile));
         User suggestion = User.from(buildUserDto("suggestion"), "hashed");
         when(userRepository.findAllByCity(user.getCity())).thenReturn(Collections.singletonList(suggestion));
         when(userProfileRepository.findById("suggestion")).thenReturn(Optional.ofNullable(userProfile));
@@ -64,8 +65,22 @@ class DateServiceTest {
         assertEquals(dateSuggestions.get(0).getCity(), user.getCity());
     }
 
+    @Test
+    void shouldReturnDateSuggestionsWithABinaryGenderPreference() {
+        userProfile.setGenderChoice("MALE");
+        when(userRepository.findById("test")).thenReturn(Optional.ofNullable(user));
+        when(userProfileRepository.findById("test")).thenReturn(Optional.ofNullable(userProfile));
+        User suggestion = User.from(buildUserDto("suggestion"), "hashed");
+        when(userRepository.findAllByCityAndGender(user.getCity(), userProfile.getGenderChoice())).thenReturn(Collections.singletonList(suggestion));
+        when(userProfileRepository.findById("suggestion")).thenReturn(Optional.ofNullable(userProfile));
+
+        List<Date> dateSuggestions = dateService.getDateSuggestions("test");
+        assertFalse(dateSuggestions.isEmpty());
+        assertEquals(dateSuggestions.get(0).getCity(), user.getCity());
+    }
+
     private UserProfile buildUserProfile() {
-        UserPreferences userPreferences = UserPreferences.builder().activePeopleStatus("").genderChoice("Both").politicalOpinion("").build();
+        UserPreferences userPreferences = UserPreferences.builder().activePeopleStatus("").genderChoice("BOTH").politicalOpinion("").build();
         return UserProfile.builder()
                 .username("test")
                 .drinking(false)
@@ -89,7 +104,7 @@ class DateServiceTest {
                 .firstName("first")
                 .lastName("last")
                 .age(21)
-                .gender("Male")
+                .gender("MALE")
                 .city("city")
                 .aboutMe("Duh")
                 .build();

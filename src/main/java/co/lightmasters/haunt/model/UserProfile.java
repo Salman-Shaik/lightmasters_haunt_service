@@ -1,5 +1,6 @@
 package co.lightmasters.haunt.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,5 +48,15 @@ public class UserProfile {
     public String toJson() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(this);
+    }
+
+    @JsonIgnore
+    public String getGenderChoice() {
+        return this.userPreferences.getGenderChoice();
+    }
+
+    @JsonIgnore
+    public void setGenderChoice(String gender) {
+        this.userPreferences.setGenderChoice(gender);
     }
 }

@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.Convert;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -60,6 +59,7 @@ public class User {
                 .username(userDto.getUsername())
                 .password(password)
                 .prompts(Collections.emptyList())
+                .city("CITY")
                 .build();
     }
 

@@ -34,17 +34,33 @@ public class DateService {
 
     private List<Date> getDateSuggestionForUser(User user) {
         String userCity = user.getCity();
-        List<User> allUserByCity = userRepository.findAllByCity(userCity);
-        return allUserByCity.stream()
-                .map(this::getDateSuggestionFromUserCity)
-                .collect(Collectors.toList());
+        Optional<UserProfile> userProfile = userProfileRepository.findById(user.getUsername());
+        if (userProfile.isPresent()) {
+            String genderChoice = userProfile.get().getGenderChoice();
+            List<User> allUserByCity;
+            if (genderChoice.equals("BOTH")) {
+                allUserByCity = userRepository.findAllByCity(userCity);
+            } else {
+                allUserByCity = userRepository.findAllByCityAndGender(userCity, genderChoice);
+            }
+            return allUserByCity.stream()
+                    .map(profile -> getDateSuggestionFromUserCity(profile, user.getGender()))
+                    .collect(Collectors.toList());
+        }
+        return Collections.emptyList();
     }
 
-    private Date getDateSuggestionFromUserCity(User user) {
+    private Date getDateSuggestionFromUserCity(User user, String gender) {
         Optional<UserProfile> userProfile = userProfileRepository.findById(user.getUsername());
         if (userProfile.isPresent()) {
             UserProfile profile = userProfile.get();
-            return Date.from(user, profile);
+            String genderChoice = profile.getGenderChoice();
+            boolean preferencesMatch = genderChoice.equals("BOTH")
+                    || genderChoice.equals(gender);
+            if (preferencesMatch) {
+                return Date.from(user, profile);
+            }
+            return null;
         }
         return null;
     }

@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface UserRepository extends CrudRepository<User, String> {
     List<User> findAllByCity(String userCity);
+
+    List<User> findAllByCityAndGender(String userCity, String genderChoice);
 }
