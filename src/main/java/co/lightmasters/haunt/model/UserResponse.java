@@ -29,18 +29,11 @@ import javax.validation.constraints.NotNull;
 @Setter
 @ToString
 public class UserResponse {
-    @NotBlank
     private String username;
-
-    @NotBlank
     private String firstName;
     private String lastName;
-
-    @Min(value = 18)
-    @NotNull
     private Integer age;
     private String gender;
-
     private String aboutMe;
 
     public static UserResponse from(User user) {

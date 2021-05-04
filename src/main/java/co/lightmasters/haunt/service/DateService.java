@@ -1,8 +1,12 @@
 package co.lightmasters.haunt.service;
 
 import co.lightmasters.haunt.model.Date;
+import co.lightmasters.haunt.model.Swipe;
+import co.lightmasters.haunt.model.SwipeDto;
+import co.lightmasters.haunt.model.SwipeResponse;
 import co.lightmasters.haunt.model.User;
 import co.lightmasters.haunt.model.UserProfile;
+import co.lightmasters.haunt.repository.SwipeRepository;
 import co.lightmasters.haunt.repository.UserProfileRepository;
 import co.lightmasters.haunt.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -21,6 +25,7 @@ import static co.lightmasters.haunt.model.GenderChoice.isBoth;
 public class DateService {
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
+    private final SwipeRepository swipeRepository;
 
     public List<Date> getDateSuggestions(String username) {
         Optional<User> optionalUser = userRepository.findById(username);
@@ -62,5 +67,16 @@ public class DateService {
             return null;
         }
         return null;
+    }
+
+    public SwipeResponse setLike(SwipeDto swipeDto) {
+        Swipe swipe = Swipe.from(swipeDto);
+        List<Swipe> allSwipes = swipeRepository.findByUsername(swipe.getSwipedUsername());
+        boolean isAlreadySwiped = allSwipes.stream().anyMatch(info -> info.getSwipedUsername().equals(swipe.getUsername()));
+        if (isAlreadySwiped) {
+            swipe.setMatch(true);
+        }
+        Swipe save = swipeRepository.save(swipe);
+        return SwipeResponse.builder().username(save.getUsername()).status(isAlreadySwiped ? "Match" : "Saved").build();
     }
 }
