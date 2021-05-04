@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 
 public interface UserRepository extends CrudRepository<User, String> {
-    List<User> findAllByCity(String userCity);
+    List<User> findByCity(String userCity);
 
-    List<User> findAllByCityAndGender(String userCity, String genderChoice);
+    List<User> findByCityAndGender(String userCity, String genderChoice);
 }

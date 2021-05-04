@@ -1,6 +1,7 @@
 package co.lightmasters.haunt.controller;
 
 import co.lightmasters.haunt.model.Credentials;
+import co.lightmasters.haunt.model.GenderChoice;
 import co.lightmasters.haunt.model.Post;
 import co.lightmasters.haunt.model.PostDto;
 import co.lightmasters.haunt.model.Prompt;
@@ -32,6 +33,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 
+import static co.lightmasters.haunt.model.GenderChoice.MALE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -236,7 +238,7 @@ public class HauntUserControllerTest {
                 .firstName("first")
                 .lastName("last")
                 .age(21)
-                .gender("Male")
+                .gender(MALE.toString())
                 .city("city")
                 .aboutMe("Duh")
                 .build();

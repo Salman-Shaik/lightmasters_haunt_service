@@ -14,6 +14,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static co.lightmasters.haunt.model.GenderChoice.isBoth;
+
 @Component
 @AllArgsConstructor
 public class DateService {
@@ -38,10 +40,10 @@ public class DateService {
         if (userProfile.isPresent()) {
             String genderChoice = userProfile.get().getGenderChoice();
             List<User> allUserByCity;
-            if (genderChoice.equals("BOTH")) {
-                allUserByCity = userRepository.findAllByCity(userCity);
+            if (isBoth(genderChoice)) {
+                allUserByCity = userRepository.findByCity(userCity);
             } else {
-                allUserByCity = userRepository.findAllByCityAndGender(userCity, genderChoice);
+                allUserByCity = userRepository.findByCityAndGender(userCity, genderChoice);
             }
             return allUserByCity.stream()
                     .map(profile -> getDateSuggestionFromUserCity(profile, user.getGender()))
@@ -54,10 +56,7 @@ public class DateService {
         Optional<UserProfile> userProfile = userProfileRepository.findById(user.getUsername());
         if (userProfile.isPresent()) {
             UserProfile profile = userProfile.get();
-            String genderChoice = profile.getGenderChoice();
-            boolean preferencesMatch = genderChoice.equals("BOTH")
-                    || genderChoice.equals(gender);
-            if (preferencesMatch) {
+            if (profile.isPreferredGender(gender)) {
                 return Date.from(user, profile);
             }
             return null;

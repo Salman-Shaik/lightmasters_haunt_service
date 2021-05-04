@@ -2,6 +2,7 @@ package co.lightmasters.haunt.service;
 
 import co.lightmasters.haunt.errors.InvalidCredentials;
 import co.lightmasters.haunt.model.Credentials;
+import co.lightmasters.haunt.model.GenderChoice;
 import co.lightmasters.haunt.model.User;
 import co.lightmasters.haunt.model.UserDto;
 import co.lightmasters.haunt.repository.UserRepository;
@@ -26,20 +27,19 @@ class UserServiceTest {
     private UserService userService;
 
     private User user;
-    private UserDto userDto;
+    private UserDto userDto = UserDto.builder()
+            .username("test")
+            .password("password")
+            .firstName("first")
+            .lastName("last")
+            .age(21)
+            .gender(GenderChoice.MALE.toString())
+            .aboutMe("Duh")
+            .build();
     private Credentials credentials;
 
     @BeforeEach
     void setUp() {
-        userDto = UserDto.builder()
-                .username("test")
-                .password("password")
-                .firstName("first")
-                .lastName("last")
-                .age(21)
-                .gender("Male")
-                .aboutMe("Duh")
-                .build();
         user = User.from(userDto, "hashed");
         credentials = Credentials.builder()
                 .username(userDto.getUsername())

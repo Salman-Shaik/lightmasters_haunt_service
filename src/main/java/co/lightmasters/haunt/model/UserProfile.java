@@ -16,6 +16,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
+import static co.lightmasters.haunt.model.GenderChoice.isBoth;
+
 
 @Builder
 @Entity
@@ -58,5 +60,10 @@ public class UserProfile {
     @JsonIgnore
     public void setGenderChoice(String gender) {
         this.userPreferences.setGenderChoice(gender);
+    }
+
+    @JsonIgnore
+    public boolean isPreferredGender(String gender) {
+        return isBoth(this.getGenderChoice()) || this.getGenderChoice().equals(gender);
     }
 }

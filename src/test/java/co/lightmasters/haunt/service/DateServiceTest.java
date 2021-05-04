@@ -1,6 +1,7 @@
 package co.lightmasters.haunt.service;
 
 import co.lightmasters.haunt.model.Date;
+import co.lightmasters.haunt.model.GenderChoice;
 import co.lightmasters.haunt.model.User;
 import co.lightmasters.haunt.model.UserDto;
 import co.lightmasters.haunt.model.UserPreferences;
@@ -14,6 +15,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static co.lightmasters.haunt.model.GenderChoice.FEMALE;
+import static co.lightmasters.haunt.model.GenderChoice.MALE;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -45,7 +48,7 @@ class DateServiceTest {
     @Test
     void shouldReturnEmptyListWhenUserProfileIsNotAvailable() {
         when(userRepository.findById("test")).thenReturn(Optional.ofNullable(user));
-        when(userRepository.findAllByCity(user.getCity())).thenReturn(Collections.singletonList(user));
+        when(userRepository.findByCity(user.getCity())).thenReturn(Collections.singletonList(user));
         when(userProfileRepository.findById("test")).thenReturn(Optional.empty());
 
         List<Date> dateSuggestions = dateService.getDateSuggestions("test");
@@ -57,7 +60,7 @@ class DateServiceTest {
         when(userRepository.findById("test")).thenReturn(Optional.ofNullable(user));
         when(userProfileRepository.findById("test")).thenReturn(Optional.ofNullable(userProfile));
         User suggestion = User.from(buildUserDto("suggestion"), "hashed");
-        when(userRepository.findAllByCity(user.getCity())).thenReturn(Collections.singletonList(suggestion));
+        when(userRepository.findByCity(user.getCity())).thenReturn(Collections.singletonList(suggestion));
         when(userProfileRepository.findById("suggestion")).thenReturn(Optional.ofNullable(userProfile));
 
         List<Date> dateSuggestions = dateService.getDateSuggestions("test");
@@ -67,11 +70,11 @@ class DateServiceTest {
 
     @Test
     void shouldReturnDateSuggestionsWithABinaryGenderPreference() {
-        userProfile.setGenderChoice("MALE");
+        userProfile.setGenderChoice(FEMALE.toString());
         when(userRepository.findById("test")).thenReturn(Optional.ofNullable(user));
         when(userProfileRepository.findById("test")).thenReturn(Optional.ofNullable(userProfile));
         User suggestion = User.from(buildUserDto("suggestion"), "hashed");
-        when(userRepository.findAllByCityAndGender(user.getCity(), userProfile.getGenderChoice())).thenReturn(Collections.singletonList(suggestion));
+        when(userRepository.findByCityAndGender(user.getCity(), userProfile.getGenderChoice())).thenReturn(Collections.singletonList(suggestion));
         when(userProfileRepository.findById("suggestion")).thenReturn(Optional.ofNullable(userProfile));
 
         List<Date> dateSuggestions = dateService.getDateSuggestions("test");
@@ -80,7 +83,7 @@ class DateServiceTest {
     }
 
     private UserProfile buildUserProfile() {
-        UserPreferences userPreferences = UserPreferences.builder().activePeopleStatus("").genderChoice("BOTH").politicalOpinion("").build();
+        UserPreferences userPreferences = UserPreferences.builder().activePeopleStatus("").genderChoice(GenderChoice.BOTH.toString()).politicalOpinion("").build();
         return UserProfile.builder()
                 .username("test")
                 .drinking(false)
@@ -104,7 +107,7 @@ class DateServiceTest {
                 .firstName("first")
                 .lastName("last")
                 .age(21)
-                .gender("MALE")
+                .gender(FEMALE.toString())
                 .city("city")
                 .aboutMe("Duh")
                 .build();
