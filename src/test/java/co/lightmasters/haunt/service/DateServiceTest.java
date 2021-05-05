@@ -2,14 +2,15 @@ package co.lightmasters.haunt.service;
 
 import co.lightmasters.haunt.model.Date;
 import co.lightmasters.haunt.model.GenderChoice;
-import co.lightmasters.haunt.model.Swipe;
+import co.lightmasters.haunt.model.Match;
 import co.lightmasters.haunt.model.SwipeDto;
 import co.lightmasters.haunt.model.SwipeResponse;
 import co.lightmasters.haunt.model.User;
 import co.lightmasters.haunt.model.UserDto;
 import co.lightmasters.haunt.model.UserPreferences;
 import co.lightmasters.haunt.model.UserProfile;
-import co.lightmasters.haunt.repository.SwipeRepository;
+import co.lightmasters.haunt.repository.IgnoreRepository;
+import co.lightmasters.haunt.repository.MatchRepository;
 import co.lightmasters.haunt.repository.UserProfileRepository;
 import co.lightmasters.haunt.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,29 +28,32 @@ import static org.mockito.Mockito.when;
 class DateServiceTest {
     private UserRepository userRepository;
     private UserProfileRepository userProfileRepository;
-    private SwipeRepository swipeRepository;
+    private MatchRepository matchRepository;
+    private IgnoreRepository IgnoreRepository;
     private DateService dateService;
 
     private User user;
     private UserProfile userProfile;
     private SwipeDto swipeDto;
-    private Swipe swipe;
-    private Swipe existingSwipe;
+    private Match match;
+    private Match existingMatch;
 
     @BeforeEach
     void setUp() {
         userRepository = mock(UserRepository.class);
         userProfileRepository = mock(UserProfileRepository.class);
-        swipeRepository = mock(SwipeRepository.class);
-        dateService = new DateService(userRepository, userProfileRepository, swipeRepository);
+        matchRepository = mock(MatchRepository.class);
+        IgnoreRepository = mock(IgnoreRepository.class);
+        dateService = new DateService(userRepository, userProfileRepository, matchRepository,IgnoreRepository);
+
         user = User.from(buildUserDto("test"), "hashed");
         userProfile = buildUserProfile();
         swipeDto = SwipeDto.builder()
                 .username("test")
                 .swipedUserName("swiped")
                 .build();
-        swipe = Swipe.from(swipeDto);
-        existingSwipe = Swipe.builder().swipedUsername(swipeDto.getUsername()).username(swipeDto.getSwipedUserName()).build();
+        match = Match.from(swipeDto);
+        existingMatch = Match.builder().swipedUsername(swipeDto.getUsername()).username(swipeDto.getSwipedUserName()).build();
     }
 
     @Test
@@ -98,9 +102,9 @@ class DateServiceTest {
 
     @Test
     void shouldSwipeRightAndReturnStatusMatchedIfMatched() {
-        when(swipeRepository.findByUsername(swipe.getSwipedUsername())).thenReturn(Collections.singletonList(existingSwipe));
-        swipe.setMatch(true);
-        when(swipeRepository.save(swipe)).thenReturn(swipe);
+        when(matchRepository.findByUsername(match.getSwipedUsername())).thenReturn(Collections.singletonList(existingMatch));
+        match.setMatch(true);
+        when(matchRepository.save(match)).thenReturn(match);
         SwipeResponse swipeResponse = dateService.setLike(swipeDto);
         assertEquals(swipeResponse.getUsername(), swipeDto.getUsername());
         assertEquals(swipeResponse.getStatus(), "Match");
@@ -108,8 +112,8 @@ class DateServiceTest {
 
     @Test
     void shouldSwipeRightAndSaveIfNotMatched() {
-        when(swipeRepository.findByUsername(swipe.getSwipedUsername())).thenReturn(Collections.emptyList());
-        when(swipeRepository.save(swipe)).thenReturn(swipe);
+        when(matchRepository.findByUsername(match.getSwipedUsername())).thenReturn(Collections.emptyList());
+        when(matchRepository.save(match)).thenReturn(match);
         SwipeResponse swipeResponse = dateService.setLike(swipeDto);
         assertEquals(swipeResponse.getUsername(), swipeDto.getUsername());
         assertEquals(swipeResponse.getStatus(), "Saved");

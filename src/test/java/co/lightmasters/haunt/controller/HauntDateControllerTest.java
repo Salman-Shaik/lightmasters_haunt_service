@@ -1,12 +1,10 @@
 package co.lightmasters.haunt.controller;
 
 import co.lightmasters.haunt.model.Date;
-import co.lightmasters.haunt.model.Swipe;
 import co.lightmasters.haunt.model.SwipeDto;
 import co.lightmasters.haunt.model.SwipeResponse;
 import co.lightmasters.haunt.security.WebSecurityConfig;
 import co.lightmasters.haunt.service.DateService;
-import co.lightmasters.haunt.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +18,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -80,6 +77,11 @@ class HauntDateControllerTest {
     void shouldSaveSwipeRight() throws Exception {
         when(dateService.setLike(swipeDto)).thenReturn(swipeResponse);
         this.mockMvc.perform(post("/v1/swipeRight").contentType(MediaType.APPLICATION_JSON).content(swipeDto.toJson()))
+                .andExpect(status().isOk()).andReturn();
+    }
+    @Test
+    void shouldSaveSwipeLeft() throws Exception {
+        this.mockMvc.perform(post("/v1/swipeLeft").contentType(MediaType.APPLICATION_JSON).content(swipeDto.toJson()))
                 .andExpect(status().isOk()).andReturn();
     }
 }

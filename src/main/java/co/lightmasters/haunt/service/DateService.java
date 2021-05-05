@@ -1,12 +1,14 @@
 package co.lightmasters.haunt.service;
 
 import co.lightmasters.haunt.model.Date;
-import co.lightmasters.haunt.model.Swipe;
+import co.lightmasters.haunt.model.Ignore;
+import co.lightmasters.haunt.model.Match;
 import co.lightmasters.haunt.model.SwipeDto;
 import co.lightmasters.haunt.model.SwipeResponse;
 import co.lightmasters.haunt.model.User;
 import co.lightmasters.haunt.model.UserProfile;
-import co.lightmasters.haunt.repository.SwipeRepository;
+import co.lightmasters.haunt.repository.IgnoreRepository;
+import co.lightmasters.haunt.repository.MatchRepository;
 import co.lightmasters.haunt.repository.UserProfileRepository;
 import co.lightmasters.haunt.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -25,7 +27,8 @@ import static co.lightmasters.haunt.model.GenderChoice.isBoth;
 public class DateService {
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
-    private final SwipeRepository swipeRepository;
+    private final MatchRepository matchRepository;
+    private final IgnoreRepository ignoreRepository;
 
     public List<Date> getDateSuggestions(String username) {
         Optional<User> optionalUser = userRepository.findById(username);
@@ -70,18 +73,26 @@ public class DateService {
     }
 
     public SwipeResponse setLike(SwipeDto swipeDto) {
-        Swipe swipe = Swipe.from(swipeDto);
-        List<Swipe> allSwipes = swipeRepository.findByUsername(swipe.getSwipedUsername());
-        List<Swipe> registeredSwipes = allSwipes.stream()
-                .filter(info -> info.getSwipedUsername().equals(swipe.getUsername()))
+        Match match = Match.from(swipeDto);
+        List<Match> allMatches = matchRepository.findByUsername(match.getSwipedUsername());
+        List<Match> registeredSwipes = allMatches.stream()
+                .filter(info -> info.getSwipedUsername().equals(match.getUsername()))
                 .collect(Collectors.toList());
         if (registeredSwipes.size() == 1) {
-            Swipe registeredSwipe = registeredSwipes.get(0);
-            swipe.setMatch(true);
+            Match registeredSwipe = registeredSwipes.get(0);
+            match.setMatch(true);
             registeredSwipe.setMatch(true);
-            swipeRepository.save(registeredSwipe);
+            matchRepository.save(registeredSwipe);
         }
-        Swipe save = swipeRepository.save(swipe);
-        return SwipeResponse.builder().username(save.getUsername()).status(!registeredSwipes.isEmpty() ? "Match" : "Saved").build();
+        Match save = matchRepository.save(match);
+        return SwipeResponse.builder()
+                .username(save.getUsername())
+                .status(!registeredSwipes.isEmpty() ? "Match" : "Saved")
+                .build();
+    }
+
+    public void setIgnore(SwipeDto swipeDto) {
+        Ignore ignoreUser = Ignore.from(swipeDto);
+        ignoreRepository.save(ignoreUser);
     }
 }

@@ -24,8 +24,8 @@ import javax.validation.constraints.NotNull;
 @Setter
 @ToString
 @Entity
-@Table(name = "swipes", schema = "public")
-public class Swipe {
+@Table(name = "matches", schema = "public")
+public class Match {
     @Id
     @Generated
     private Integer id;
@@ -38,8 +38,8 @@ public class Swipe {
     @NotNull
     private boolean isMatch;
 
-    public static Swipe from(SwipeDto swipeDto) {
-        return Swipe.builder()
+    public static Match from(SwipeDto swipeDto) {
+        return Match.builder()
                 .username(swipeDto.getUsername())
                 .swipedUsername(swipeDto.getSwipedUserName())
                 .isMatch(false)

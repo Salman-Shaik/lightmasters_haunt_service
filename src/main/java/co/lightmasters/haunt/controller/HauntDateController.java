@@ -38,4 +38,10 @@ public class HauntDateController {
         SwipeResponse swipeResponse = dateService.setLike(swipeDto);
         return ResponseEntity.ok(swipeResponse);
     }
+
+    @PostMapping(path = "/swipeLeft")
+    public ResponseEntity<String> ignoreUser(@RequestBody @Valid SwipeDto swipeDto) {
+        dateService.setIgnore(swipeDto);
+        return ResponseEntity.ok().body("Ignored");
+    }
 }
