@@ -72,11 +72,16 @@ public class DateService {
     public SwipeResponse setLike(SwipeDto swipeDto) {
         Swipe swipe = Swipe.from(swipeDto);
         List<Swipe> allSwipes = swipeRepository.findByUsername(swipe.getSwipedUsername());
-        boolean isAlreadySwiped = allSwipes.stream().anyMatch(info -> info.getSwipedUsername().equals(swipe.getUsername()));
-        if (isAlreadySwiped) {
+        List<Swipe> registeredSwipes = allSwipes.stream()
+                .filter(info -> info.getSwipedUsername().equals(swipe.getUsername()))
+                .collect(Collectors.toList());
+        if (registeredSwipes.size() == 1) {
+            Swipe registeredSwipe = registeredSwipes.get(0);
             swipe.setMatch(true);
+            registeredSwipe.setMatch(true);
+            swipeRepository.save(registeredSwipe);
         }
         Swipe save = swipeRepository.save(swipe);
-        return SwipeResponse.builder().username(save.getUsername()).status(isAlreadySwiped ? "Match" : "Saved").build();
+        return SwipeResponse.builder().username(save.getUsername()).status(!registeredSwipes.isEmpty() ? "Match" : "Saved").build();
     }
 }
