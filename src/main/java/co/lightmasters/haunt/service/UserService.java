@@ -2,6 +2,7 @@ package co.lightmasters.haunt.service;
 
 import co.lightmasters.haunt.errors.InvalidCredentials;
 import co.lightmasters.haunt.model.Credentials;
+import co.lightmasters.haunt.model.ProfilePicDto;
 import co.lightmasters.haunt.model.Prompt;
 import co.lightmasters.haunt.model.PromptDto;
 import co.lightmasters.haunt.model.User;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,6 +74,16 @@ public class UserService {
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             return user.getPrompts();
+        }
+        return null;
+    }
+
+    public User saveProfilePic(ProfilePicDto profilePicDto) {
+        Optional<User> optionalUser = this.fetchUser(profilePicDto.getUsername());
+        if(optionalUser.isPresent()){
+            User user = optionalUser.get();
+            user.setProfilePicture(profilePicDto.getProfilePic());
+            return userRepository.save(user);
         }
         return null;
     }

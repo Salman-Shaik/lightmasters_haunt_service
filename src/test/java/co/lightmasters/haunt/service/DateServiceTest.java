@@ -29,7 +29,7 @@ class DateServiceTest {
     private UserRepository userRepository;
     private UserProfileRepository userProfileRepository;
     private MatchRepository matchRepository;
-    private IgnoreRepository IgnoreRepository;
+    private IgnoreRepository ignoreRepository;
     private DateService dateService;
 
     private User user;
@@ -43,8 +43,8 @@ class DateServiceTest {
         userRepository = mock(UserRepository.class);
         userProfileRepository = mock(UserProfileRepository.class);
         matchRepository = mock(MatchRepository.class);
-        IgnoreRepository = mock(IgnoreRepository.class);
-        dateService = new DateService(userRepository, userProfileRepository, matchRepository,IgnoreRepository);
+        ignoreRepository = mock(IgnoreRepository.class);
+        dateService = new DateService(userRepository, userProfileRepository, matchRepository, ignoreRepository);
 
         user = User.from(buildUserDto("test"), "hashed");
         userProfile = buildUserProfile();

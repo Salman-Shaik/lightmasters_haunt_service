@@ -35,7 +35,7 @@ public class Ignore {
     private String username;
 
     @NotBlank
-    private String IgnoredUsername;
+    private String ignoredUsername;
 
     @NotNull
     private Date lastModified;
@@ -43,7 +43,7 @@ public class Ignore {
     public static Ignore from(SwipeDto swipeDto) {
         return Ignore.builder()
                 .username(swipeDto.getUsername())
-                .IgnoredUsername(swipeDto.getSwipedUserName())
+                .ignoredUsername(swipeDto.getSwipedUserName())
                 .lastModified(new Date())
                 .build();
     }

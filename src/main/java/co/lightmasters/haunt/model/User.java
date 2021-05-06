@@ -7,9 +7,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.persistence.Basic;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -48,6 +51,10 @@ public class User {
 
     @Convert(converter = PromptConverter.class)
     private List<Prompt> prompts;
+
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private byte[] profilePicture;
 
     public static User from(UserDto userDto,String password) {
         return User.builder()

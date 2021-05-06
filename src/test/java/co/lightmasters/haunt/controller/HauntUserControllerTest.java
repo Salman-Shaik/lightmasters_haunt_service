@@ -4,6 +4,7 @@ import co.lightmasters.haunt.model.Credentials;
 import co.lightmasters.haunt.model.GenderChoice;
 import co.lightmasters.haunt.model.Post;
 import co.lightmasters.haunt.model.PostDto;
+import co.lightmasters.haunt.model.ProfilePicDto;
 import co.lightmasters.haunt.model.Prompt;
 import co.lightmasters.haunt.model.PromptDto;
 import co.lightmasters.haunt.model.User;
@@ -23,11 +24,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -63,12 +67,13 @@ public class HauntUserControllerTest {
     private UserProfile userProfile;
     private Credentials credentials;
     private PostDto postDto;
+    private ProfilePicDto profilePicDto;
     private PromptDto promptDto;
     private Prompt prompt;
     private UserFeed feed;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws IOException {
         userDto = buildUserDto();
         user = User.from(userDto, "hashed");
 
@@ -80,6 +85,17 @@ public class HauntUserControllerTest {
         feed = UserFeed.builder()
                 .posts(Collections.emptyList())
                 .username("test")
+                .build();
+        MockMultipartFile file
+                = new MockMultipartFile(
+                "file",
+                "hello.txt",
+                MediaType.IMAGE_JPEG_VALUE,
+                "Hello, World!".getBytes()
+        );
+        profilePicDto=ProfilePicDto.builder()
+                .username("test")
+                .profilePic(file.getBytes())
                 .build();
     }
 
@@ -211,6 +227,22 @@ public class HauntUserControllerTest {
     public void shouldRespondWithNoContentWhenPromptsAreNotAvailable() throws Exception {
         when(userService.getPrompts(promptDto.getUsername())).thenReturn(Collections.emptyList());
         this.mockMvc.perform(get("/v1/prompts").queryParam("username", "test")).andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void shouldSaveProfilePicture() throws Exception {
+        when(userService.saveProfilePic(profilePicDto)).thenReturn(user);
+        this.mockMvc.perform(post("/v1/profilePicture").contentType(MediaType.APPLICATION_JSON)
+                .content(profilePicDto.toJson()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void shouldThrowUnAuthorizedWhenUseIsInvalid() throws Exception {
+        when(userService.saveProfilePic(profilePicDto)).thenReturn(null);
+        this.mockMvc.perform(post("/v1/profilePicture").contentType(MediaType.APPLICATION_JSON)
+                .content(profilePicDto.toJson()))
+                .andExpect(status().isUnauthorized());
     }
 
     private UserProfile buildUserProfile() {

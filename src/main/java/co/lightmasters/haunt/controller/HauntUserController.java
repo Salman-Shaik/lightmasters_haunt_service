@@ -3,6 +3,7 @@ package co.lightmasters.haunt.controller;
 import co.lightmasters.haunt.model.Credentials;
 import co.lightmasters.haunt.model.Post;
 import co.lightmasters.haunt.model.PostDto;
+import co.lightmasters.haunt.model.ProfilePicDto;
 import co.lightmasters.haunt.model.Prompt;
 import co.lightmasters.haunt.model.PromptDto;
 import co.lightmasters.haunt.model.User;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,6 +74,15 @@ public class HauntUserController {
     public ResponseEntity<Post> savePost(@RequestBody @Valid PostDto post) {
         Post savePost = userFeedService.savePost(post);
         return ResponseEntity.status(HttpStatus.CREATED).body(savePost);
+    }
+
+    @PostMapping(path = "/profilePicture")
+    public ResponseEntity<String> saveProfilePicture(@RequestBody @Valid ProfilePicDto profilePicDto) {
+        User user = userService.saveProfilePic(profilePicDto);
+        if (user != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(user.getUsername());
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
 
     @GetMapping(path = "/post")

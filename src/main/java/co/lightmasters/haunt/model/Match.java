@@ -24,7 +24,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 @ToString
 @Entity
-@Table(name = "matches", schema = "public")
+@Table(name = "match", schema = "public")
 public class Match {
     @Id
     @Generated
