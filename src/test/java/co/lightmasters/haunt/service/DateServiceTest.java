@@ -2,6 +2,7 @@ package co.lightmasters.haunt.service;
 
 import co.lightmasters.haunt.model.Date;
 import co.lightmasters.haunt.model.GenderChoice;
+import co.lightmasters.haunt.model.Ignore;
 import co.lightmasters.haunt.model.Match;
 import co.lightmasters.haunt.model.SwipeDto;
 import co.lightmasters.haunt.model.SwipeResponse;
@@ -22,7 +23,10 @@ import java.util.Optional;
 
 import static co.lightmasters.haunt.model.GenderChoice.FEMALE;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class DateServiceTest {
@@ -108,6 +112,14 @@ class DateServiceTest {
         SwipeResponse swipeResponse = dateService.setLike(swipeDto);
         assertEquals(swipeResponse.getUsername(), swipeDto.getUsername());
         assertEquals(swipeResponse.getStatus(), "Match");
+    }
+
+    @Test
+    void shouldDeleteTheMatchAndIgnoreUserWhenUnMatched() {
+        SwipeResponse swipeResponse = dateService.removeLike(swipeDto);
+        assertEquals(swipeResponse.getUsername(), swipeDto.getUsername());
+        assertEquals(swipeResponse.getStatus(), "Deleted");
+        verify(ignoreRepository, times(1)).save(any(Ignore.class));
     }
 
     @Test

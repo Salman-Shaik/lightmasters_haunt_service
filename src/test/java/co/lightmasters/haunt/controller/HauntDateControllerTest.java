@@ -81,6 +81,13 @@ class HauntDateControllerTest {
     }
 
     @Test
+    void shouldDeleteTheMatchWhenUnMatched() throws Exception {
+        when(dateService.setLike(swipeDto)).thenReturn(swipeResponse);
+        this.mockMvc.perform(post("/v1/unMatch").contentType(MediaType.APPLICATION_JSON).content(swipeDto.toJson()))
+                .andExpect(status().isOk()).andReturn();
+    }
+
+    @Test
     void shouldSaveSwipeLeft() throws Exception {
         this.mockMvc.perform(post("/v1/swipeLeft").contentType(MediaType.APPLICATION_JSON).content(swipeDto.toJson()))
                 .andExpect(status().isOk()).andReturn();

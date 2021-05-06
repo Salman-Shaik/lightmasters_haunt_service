@@ -95,4 +95,14 @@ public class DateService {
         Ignore ignoreUser = Ignore.from(swipeDto);
         ignoreRepository.save(ignoreUser);
     }
+
+    public SwipeResponse removeLike(SwipeDto swipeDto) {
+        Match match = Match.from(swipeDto);
+        matchRepository.deleteByUsernameAndSwipedUsername(match.getUsername(), match.getSwipedUsername());
+        setIgnore(swipeDto);
+        return SwipeResponse.builder()
+                .username(match.getUsername())
+                .status("Deleted")
+                .build();
+    }
 }

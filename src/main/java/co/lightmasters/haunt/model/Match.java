@@ -29,6 +29,7 @@ public class Match {
     @Id
     @Generated
     private Integer id;
+
     @NotBlank
     private String username;
 

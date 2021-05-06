@@ -39,6 +39,12 @@ public class HauntDateController {
         return ResponseEntity.ok(swipeResponse);
     }
 
+    @PostMapping(path = "/unMatch")
+    public ResponseEntity<SwipeResponse> unMatchUser(@RequestBody @Valid SwipeDto swipeDto) {
+        SwipeResponse swipeResponse = dateService.removeLike(swipeDto);
+        return ResponseEntity.ok(swipeResponse);
+    }
+
     @PostMapping(path = "/swipeLeft")
     public ResponseEntity<String> ignoreUser(@RequestBody @Valid SwipeDto swipeDto) {
         dateService.setIgnore(swipeDto);

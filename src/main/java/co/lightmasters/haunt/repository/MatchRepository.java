@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface MatchRepository extends CrudRepository<Match, Integer> {
     List<Match> findByUsername(String username);
+
+    void deleteByUsernameAndSwipedUsername(String username, String swipedUsername);
 }

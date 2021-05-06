@@ -17,6 +17,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/v1/post").permitAll()
                 .antMatchers(HttpMethod.POST, "/v1/prompt").permitAll()
                 .antMatchers(HttpMethod.POST, "/v1/swipeRight").permitAll()
+                .antMatchers(HttpMethod.POST, "/v1/unMatch").permitAll()
                 .antMatchers(HttpMethod.POST, "/v1/swipeLeft").permitAll()
                 .antMatchers(HttpMethod.POST, "/v1/profilePicture").permitAll()
                 .antMatchers(HttpMethod.GET, "/v1/user").permitAll()
