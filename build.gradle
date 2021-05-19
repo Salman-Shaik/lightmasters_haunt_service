@@ -41,6 +41,8 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation 'junit:junit:4.13.1'
     compileOnly 'org.projectlombok:lombok'
+    compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.7.0'
+    compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.7.0'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
