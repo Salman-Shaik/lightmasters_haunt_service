@@ -1,15 +1,18 @@
 package co.lightmasters.haunt.service;
 
+import co.lightmasters.haunt.model.Chat;
 import co.lightmasters.haunt.model.Date;
 import co.lightmasters.haunt.model.GenderChoice;
 import co.lightmasters.haunt.model.Ignore;
 import co.lightmasters.haunt.model.Match;
-import co.lightmasters.haunt.model.SwipeDto;
+import co.lightmasters.haunt.model.dto.ChatDto;
+import co.lightmasters.haunt.model.dto.SwipeDto;
 import co.lightmasters.haunt.model.SwipeResponse;
 import co.lightmasters.haunt.model.User;
-import co.lightmasters.haunt.model.UserDto;
+import co.lightmasters.haunt.model.dto.UserDto;
 import co.lightmasters.haunt.model.UserPreferences;
 import co.lightmasters.haunt.model.UserProfile;
+import co.lightmasters.haunt.repository.ChatRepository;
 import co.lightmasters.haunt.repository.IgnoreRepository;
 import co.lightmasters.haunt.repository.MatchRepository;
 import co.lightmasters.haunt.repository.UserProfileRepository;
@@ -34,6 +37,7 @@ class DateServiceTest {
     private UserProfileRepository userProfileRepository;
     private MatchRepository matchRepository;
     private IgnoreRepository ignoreRepository;
+    private ChatService chatService;
     private DateService dateService;
 
     private User user;
@@ -41,6 +45,8 @@ class DateServiceTest {
     private SwipeDto swipeDto;
     private Match match;
     private Match existingMatch;
+    private ChatDto chatDto;
+    private Chat chat;
 
     @BeforeEach
     void setUp() {
@@ -48,7 +54,8 @@ class DateServiceTest {
         userProfileRepository = mock(UserProfileRepository.class);
         matchRepository = mock(MatchRepository.class);
         ignoreRepository = mock(IgnoreRepository.class);
-        dateService = new DateService(userRepository, userProfileRepository, matchRepository, ignoreRepository);
+        chatService = mock(ChatService.class);
+        dateService = new DateService(userRepository, userProfileRepository, matchRepository, ignoreRepository,chatService);
 
         user = User.from(buildUserDto("test"), "hashed");
         userProfile = buildUserProfile();
@@ -58,6 +65,8 @@ class DateServiceTest {
                 .build();
         match = Match.from(swipeDto);
         existingMatch = Match.builder().swipedUsername(swipeDto.getUsername()).username(swipeDto.getSwipedUserName()).build();
+        chatDto = ChatDto.from(swipeDto);
+        chat = Chat.from(chatDto);
     }
 
     @Test
@@ -107,6 +116,7 @@ class DateServiceTest {
     @Test
     void shouldSwipeRightAndReturnStatusMatchedIfMatched() {
         when(matchRepository.findByUsername(match.getSwipedUsername())).thenReturn(Collections.singletonList(existingMatch));
+        when(chatService.createChat(chatDto)).thenReturn(chat);
         match.setMatch(true);
         when(matchRepository.save(match)).thenReturn(match);
         SwipeResponse swipeResponse = dateService.setLike(swipeDto);

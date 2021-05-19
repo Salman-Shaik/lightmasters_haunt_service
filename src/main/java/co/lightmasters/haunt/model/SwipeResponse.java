@@ -26,4 +26,6 @@ public class SwipeResponse {
 
     @NotBlank
     private String status;
+
+    private Long chatId;
 }

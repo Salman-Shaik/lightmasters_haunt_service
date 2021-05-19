@@ -1,4 +1,4 @@
-package co.lightmasters.haunt.model;
+package co.lightmasters.haunt.model.dto;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,9 +9,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
+import java.util.Date;
 
 
 @Getter
@@ -21,13 +21,13 @@ import javax.validation.constraints.NotBlank;
 @EqualsAndHashCode
 @Setter
 @ToString
-public class PostDto {
+public class PromptDto {
     @NotBlank
     private String username;
-
     @NotBlank
-    @Length(max = 144, min = 2)
-    private String tweet;
+    private String question;
+    @NotBlank
+    private String answer;
 
     public String toJson() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();

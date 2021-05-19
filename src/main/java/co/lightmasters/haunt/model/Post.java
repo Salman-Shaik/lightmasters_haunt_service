@@ -1,5 +1,6 @@
 package co.lightmasters.haunt.model;
 
+import co.lightmasters.haunt.model.dto.PostDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;

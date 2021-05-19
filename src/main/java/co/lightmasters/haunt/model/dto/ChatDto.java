@@ -1,4 +1,4 @@
-package co.lightmasters.haunt.model;
+package co.lightmasters.haunt.model.dto;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,10 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.Id;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 
 @Getter
@@ -23,26 +20,19 @@ import javax.validation.constraints.NotNull;
 @EqualsAndHashCode
 @Setter
 @ToString
-public class UserDto {
+public class ChatDto {
     @NotBlank
     private String username;
 
     @NotBlank
-    private String password;
+    private String matchedUsername;
 
-    @NotBlank
-    private String firstName;
-    private String lastName;
-
-    @Min(value = 18)
-    @NotNull
-    private Integer age;
-    private String gender;
-
-    @NotBlank
-    private String city;
-
-    private String aboutMe;
+    public static ChatDto from(SwipeDto swipeDto) {
+        return ChatDto.builder()
+                .username(swipeDto.getUsername())
+                .matchedUsername(swipeDto.getSwipedUserName())
+                .build();
+    }
 
     public String toJson() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();

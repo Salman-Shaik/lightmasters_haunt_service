@@ -1,21 +1,19 @@
 package co.lightmasters.haunt.model;
 
-import co.lightmasters.haunt.model.dto.SwipeDto;
+import co.lightmasters.haunt.model.dto.ChatDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
-import lombok.Generated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
 
 @Getter
 @Builder
@@ -25,26 +23,22 @@ import javax.validation.constraints.NotNull;
 @Setter
 @ToString
 @Entity
-@Table(name = "match", schema = "public")
-public class Match {
+@Table(name = "chat", schema = "public")
+public class Chat {
     @Id
-    @Generated
-    private Long id;
-
-    @NotBlank
-    private String username;
-
-    @NotBlank
-    private String swipedUsername;
+    @GeneratedValue
+    private Long chatId;
 
     @NotNull
-    private boolean isMatch;
+    private String username;
 
-    public static Match from(SwipeDto swipeDto) {
-        return Match.builder()
-                .username(swipeDto.getUsername())
-                .swipedUsername(swipeDto.getSwipedUserName())
-                .isMatch(false)
+    @NotNull
+    private String matchedUsername;
+
+    public static Chat from(ChatDto chatDto) {
+        return Chat.builder()
+                .username(chatDto.getUsername())
+                .matchedUsername(chatDto.getMatchedUsername())
                 .build();
     }
 }

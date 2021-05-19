@@ -1,4 +1,4 @@
-package co.lightmasters.haunt.model;
+package co.lightmasters.haunt.model.dto;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,26 +10,24 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.io.IOException;
 
 
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Setter
 @EqualsAndHashCode
+@Setter
 @ToString
-public class ProfilePicDto {
+public class PostDto {
     @NotBlank
     private String username;
 
-    @NotNull
-    private byte[] profilePic;
+    @NotBlank
+    @Length(max = 144, min = 2)
+    private String tweet;
 
     public String toJson() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();

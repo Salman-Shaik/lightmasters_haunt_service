@@ -1,6 +1,7 @@
 package co.lightmasters.haunt.model;
 
 import co.lightmasters.haunt.model.converters.PromptConverter;
+import co.lightmasters.haunt.model.dto.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -56,7 +57,7 @@ public class User {
     @Basic(fetch = FetchType.LAZY)
     private byte[] profilePicture;
 
-    public static User from(UserDto userDto,String password) {
+    public static User from(UserDto userDto, String password) {
         return User.builder()
                 .aboutMe(userDto.getAboutMe())
                 .gender(userDto.getGender())

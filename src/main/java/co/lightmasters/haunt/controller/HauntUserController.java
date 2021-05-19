@@ -2,12 +2,12 @@ package co.lightmasters.haunt.controller;
 
 import co.lightmasters.haunt.model.Credentials;
 import co.lightmasters.haunt.model.Post;
-import co.lightmasters.haunt.model.PostDto;
-import co.lightmasters.haunt.model.ProfilePicDto;
+import co.lightmasters.haunt.model.dto.PostDto;
+import co.lightmasters.haunt.model.dto.ProfilePicDto;
 import co.lightmasters.haunt.model.Prompt;
-import co.lightmasters.haunt.model.PromptDto;
+import co.lightmasters.haunt.model.dto.PromptDto;
 import co.lightmasters.haunt.model.User;
-import co.lightmasters.haunt.model.UserDto;
+import co.lightmasters.haunt.model.dto.UserDto;
 import co.lightmasters.haunt.model.UserFeed;
 import co.lightmasters.haunt.model.UserProfile;
 import co.lightmasters.haunt.model.UserResponse;
@@ -17,7 +17,6 @@ import co.lightmasters.haunt.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 

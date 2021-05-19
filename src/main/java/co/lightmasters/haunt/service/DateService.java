@@ -1,9 +1,11 @@
 package co.lightmasters.haunt.service;
 
+import co.lightmasters.haunt.model.Chat;
+import co.lightmasters.haunt.model.dto.ChatDto;
 import co.lightmasters.haunt.model.Date;
 import co.lightmasters.haunt.model.Ignore;
 import co.lightmasters.haunt.model.Match;
-import co.lightmasters.haunt.model.SwipeDto;
+import co.lightmasters.haunt.model.dto.SwipeDto;
 import co.lightmasters.haunt.model.SwipeResponse;
 import co.lightmasters.haunt.model.User;
 import co.lightmasters.haunt.model.UserProfile;
@@ -29,6 +31,7 @@ public class DateService {
     private final UserProfileRepository userProfileRepository;
     private final MatchRepository matchRepository;
     private final IgnoreRepository ignoreRepository;
+    private final ChatService chatService;
 
     public List<Date> getDateSuggestions(String username) {
         Optional<User> optionalUser = userRepository.findById(username);
@@ -74,21 +77,30 @@ public class DateService {
 
     public SwipeResponse setLike(SwipeDto swipeDto) {
         Match match = Match.from(swipeDto);
+        Long chatId = null;
         List<Match> allMatches = matchRepository.findByUsername(match.getSwipedUsername());
         List<Match> registeredSwipes = allMatches.stream()
                 .filter(info -> info.getSwipedUsername().equals(match.getUsername()))
                 .collect(Collectors.toList());
         if (registeredSwipes.size() == 1) {
-            Match registeredSwipe = registeredSwipes.get(0);
-            match.setMatch(true);
-            registeredSwipe.setMatch(true);
-            matchRepository.save(registeredSwipe);
+            chatId = createMatchAndChat(swipeDto, match, registeredSwipes);
         }
         Match save = matchRepository.save(match);
         return SwipeResponse.builder()
                 .username(save.getUsername())
                 .status(!registeredSwipes.isEmpty() ? "Match" : "Saved")
+                .chatId(chatId)
                 .build();
+    }
+
+    private Long createMatchAndChat(SwipeDto swipeDto, Match match, List<Match> registeredSwipes) {
+        Match registeredSwipe = registeredSwipes.get(0);
+        match.setMatch(true);
+        registeredSwipe.setMatch(true);
+        matchRepository.save(registeredSwipe);
+        ChatDto chatDto = ChatDto.from(swipeDto);
+        Chat chat = chatService.createChat(chatDto);
+        return chat.getChatId();
     }
 
     public void setIgnore(SwipeDto swipeDto) {
@@ -99,6 +111,7 @@ public class DateService {
     public SwipeResponse removeLike(SwipeDto swipeDto) {
         Match match = Match.from(swipeDto);
         matchRepository.deleteByUsernameAndSwipedUsername(match.getUsername(), match.getSwipedUsername());
+        chatService.deleteChat(match.getUsername(),match.getSwipedUsername());
         setIgnore(swipeDto);
         return SwipeResponse.builder()
                 .username(match.getUsername())

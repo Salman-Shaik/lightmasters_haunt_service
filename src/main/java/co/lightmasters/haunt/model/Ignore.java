@@ -1,5 +1,6 @@
 package co.lightmasters.haunt.model;
 
+import co.lightmasters.haunt.model.dto.SwipeDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -29,7 +30,7 @@ import java.util.Date;
 public class Ignore {
     @Id
     @Generated
-    private Integer id;
+    private Long id;
 
     @NotBlank
     private String username;

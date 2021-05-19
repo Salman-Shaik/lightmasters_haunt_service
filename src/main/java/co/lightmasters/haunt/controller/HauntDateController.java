@@ -1,12 +1,13 @@
 package co.lightmasters.haunt.controller;
 
 import co.lightmasters.haunt.model.Date;
-import co.lightmasters.haunt.model.SwipeDto;
+import co.lightmasters.haunt.model.dto.SwipeDto;
 import co.lightmasters.haunt.model.SwipeResponse;
 import co.lightmasters.haunt.service.DateService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,7 +40,7 @@ public class HauntDateController {
         return ResponseEntity.ok(swipeResponse);
     }
 
-    @PostMapping(path = "/unMatch")
+    @DeleteMapping(path = "/unMatch")
     public ResponseEntity<SwipeResponse> unMatchUser(@RequestBody @Valid SwipeDto swipeDto) {
         SwipeResponse swipeResponse = dateService.removeLike(swipeDto);
         return ResponseEntity.ok(swipeResponse);

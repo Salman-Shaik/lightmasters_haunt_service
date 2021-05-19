@@ -4,7 +4,7 @@ import co.lightmasters.haunt.errors.InvalidCredentials;
 import co.lightmasters.haunt.model.Credentials;
 import co.lightmasters.haunt.model.GenderChoice;
 import co.lightmasters.haunt.model.User;
-import co.lightmasters.haunt.model.UserDto;
+import co.lightmasters.haunt.model.dto.UserDto;
 import co.lightmasters.haunt.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

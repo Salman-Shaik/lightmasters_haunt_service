@@ -1,14 +1,13 @@
 package co.lightmasters.haunt.controller;
 
 import co.lightmasters.haunt.model.Credentials;
-import co.lightmasters.haunt.model.GenderChoice;
 import co.lightmasters.haunt.model.Post;
-import co.lightmasters.haunt.model.PostDto;
-import co.lightmasters.haunt.model.ProfilePicDto;
+import co.lightmasters.haunt.model.dto.PostDto;
+import co.lightmasters.haunt.model.dto.ProfilePicDto;
 import co.lightmasters.haunt.model.Prompt;
-import co.lightmasters.haunt.model.PromptDto;
+import co.lightmasters.haunt.model.dto.PromptDto;
 import co.lightmasters.haunt.model.User;
-import co.lightmasters.haunt.model.UserDto;
+import co.lightmasters.haunt.model.dto.UserDto;
 import co.lightmasters.haunt.model.UserFeed;
 import co.lightmasters.haunt.model.UserPreferences;
 import co.lightmasters.haunt.model.UserProfile;
@@ -29,7 +28,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -93,7 +91,7 @@ public class HauntUserControllerTest {
                 MediaType.IMAGE_JPEG_VALUE,
                 "Hello, World!".getBytes()
         );
-        profilePicDto=ProfilePicDto.builder()
+        profilePicDto = ProfilePicDto.builder()
                 .username("test")
                 .profilePic(file.getBytes())
                 .build();

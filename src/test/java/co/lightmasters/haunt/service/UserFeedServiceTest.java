@@ -1,13 +1,11 @@
 package co.lightmasters.haunt.service;
 
 import co.lightmasters.haunt.model.Post;
-import co.lightmasters.haunt.model.PostDto;
 import co.lightmasters.haunt.model.UserFeed;
 import co.lightmasters.haunt.repository.UserFeedRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.util.Arrays;
 import java.util.Collections;

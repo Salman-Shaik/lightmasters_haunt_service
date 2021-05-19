@@ -2,11 +2,11 @@ package co.lightmasters.haunt.service;
 
 import co.lightmasters.haunt.errors.InvalidCredentials;
 import co.lightmasters.haunt.model.Credentials;
-import co.lightmasters.haunt.model.ProfilePicDto;
+import co.lightmasters.haunt.model.dto.ProfilePicDto;
 import co.lightmasters.haunt.model.Prompt;
-import co.lightmasters.haunt.model.PromptDto;
+import co.lightmasters.haunt.model.dto.PromptDto;
 import co.lightmasters.haunt.model.User;
-import co.lightmasters.haunt.model.UserDto;
+import co.lightmasters.haunt.model.dto.UserDto;
 import co.lightmasters.haunt.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,7 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.validation.Valid;
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,7 +79,7 @@ public class UserService {
 
     public User saveProfilePic(ProfilePicDto profilePicDto) {
         Optional<User> optionalUser = this.fetchUser(profilePicDto.getUsername());
-        if(optionalUser.isPresent()){
+        if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             user.setProfilePicture(profilePicDto.getProfilePic());
             return userRepository.save(user);

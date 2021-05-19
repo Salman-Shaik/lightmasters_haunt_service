@@ -1,7 +1,7 @@
 package co.lightmasters.haunt.controller;
 
 import co.lightmasters.haunt.model.Date;
-import co.lightmasters.haunt.model.SwipeDto;
+import co.lightmasters.haunt.model.dto.SwipeDto;
 import co.lightmasters.haunt.model.SwipeResponse;
 import co.lightmasters.haunt.security.WebSecurityConfig;
 import co.lightmasters.haunt.service.DateService;
@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Collections;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -83,7 +84,7 @@ class HauntDateControllerTest {
     @Test
     void shouldDeleteTheMatchWhenUnMatched() throws Exception {
         when(dateService.setLike(swipeDto)).thenReturn(swipeResponse);
-        this.mockMvc.perform(post("/v1/unMatch").contentType(MediaType.APPLICATION_JSON).content(swipeDto.toJson()))
+        this.mockMvc.perform(delete("/v1/unMatch").contentType(MediaType.APPLICATION_JSON).content(swipeDto.toJson()))
                 .andExpect(status().isOk()).andReturn();
     }
 
