@@ -28,7 +28,7 @@ import java.util.List;
 @Slf4j
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user", schema = "public")
+@Table(name = "person", schema = "public")
 public class User {
     @Id
     @NotBlank
